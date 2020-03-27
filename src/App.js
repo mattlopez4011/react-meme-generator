@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from "react";
+import './index.css';
+import {Meme} from "./Meme";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    const [templates, setTemplates] = useState([]);
+    const [template, setTemplate] = useState(null);
+
+    useEffect(() => {
+        fetch("https://api.imgflip.com/get_memes")
+            .then(x => x.json()
+            .then(response => setTemplates(response.data.memes))
+            );
+
+    }, []);
+
+    return (
+        <div style={{textAlign: "center"}}>
+            {/*Show the meme clicked*/}
+            {template && <Meme template={template}/> }
+        {/*  Meaning behind "!template &&". If they have not chosen a template show them all the options. */}
+        {!template && templates.map(template => {
+            return (
+                <Meme
+                template={template}
+                onClick={() => {
+                    setTemplate(template)
+                }
+                }/>
+            )
+        })}
     </div>
-  );
+    );
 }
 
 export default App;
