@@ -2,9 +2,16 @@ import React, {useState, useEffect} from "react";
 import './index.css';
 import {Meme} from "./components/Meme";
 
+const objectToQueryParam = (obj) => {
+  const params = Object.entries(obj).map(([key, value]) => `${key}=${value}`)
+  return '?' + params.join('&')
+}
+
 function App() {
   const [templates, setTemplates] = useState([]);
   const [template, setTemplate] = useState(null);
+  const [topText, setTopText] = useState('');
+  const [bottomText, setBottomText] = useState('');
 
   useEffect(() => {
     fetch("https://api.imgflip.com/get_memes")
@@ -17,7 +24,31 @@ function App() {
   return (
     <div style={{textAlign: "center"}}>
       {/*Show the meme clicked*/}
-      {template && <Meme template={template}/>}
+      {template && (
+        <form onSubmit={async e => {
+          e.preventDefault();
+          // add logic to create meme from api
+          const params = {
+            template_id: template.id,
+            text0: topText,
+            text1: bottomText,
+            username: process.env.REACT_APP_IMGFLIP_USERNAME,
+            password: process.env.REACT_APP_IMGFLIP_PASSWORD
+
+          }
+          const response = await fetch(`https://api.imgflip.com/caption_image${objectToQueryParam(
+            params
+            )}`
+          );
+          const data = await response.json()
+          console.log(data);
+        }}>
+          <Meme template={template}/>
+          <input placeholder={"top text"} value={topText} onChange={e => setTopText(e.target.value)} />
+           <input placeholder={"bottom text"} value={bottomText} onChange={e => setBottomText(e.target.value)}/>
+          <button type={"submit"}>Create Meme</button>
+        </form>
+        )}
       {/*  Meaning behind "!template &&". If they have not chosen a template show them all the options. */}
       {!template && (
         <>
