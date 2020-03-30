@@ -22,7 +22,7 @@ function App() {
 
   }, []);
 
-  // Display custome Meme
+  // Display custom Meme
   if (meme){
     return (
       <div style={{textAlign: "center"}}>
