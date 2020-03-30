@@ -12,6 +12,7 @@ function App() {
   const [template, setTemplate] = useState(null);
   const [topText, setTopText] = useState('');
   const [bottomText, setBottomText] = useState('');
+  const [meme, setMeme] = useState(null);
 
   useEffect(() => {
     fetch("https://api.imgflip.com/get_memes")
@@ -20,6 +21,15 @@ function App() {
       );
 
   }, []);
+
+  // Display custome Meme
+  if (meme){
+    return (
+      <div style={{textAlign: "center"}}>
+        <img src={meme} alt="custom meme"/>
+      </div>
+    );
+  }
 
   return (
     <div style={{textAlign: "center"}}>
@@ -40,8 +50,11 @@ function App() {
             params
             )}`
           );
-          const data = await response.json()
-          console.log(data);
+          const json = await response.json();
+          // Once the memes url is generated, set the state to the url
+          setMeme(json.data.url);
+          console.log(json);
+          console.log(json.data.url);
         }}>
           <Meme template={template}/>
           <input placeholder={"top text"} value={topText} onChange={e => setTopText(e.target.value)} />
